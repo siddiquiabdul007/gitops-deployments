@@ -8,6 +8,7 @@ metadata:
 
 spec:
   replicas: 1
+  revisionHistoryLimit: 5
 
   selector:
     matchLabels:
@@ -21,32 +22,53 @@ spec:
         version: canary
 
     spec:
+      terminationGracePeriodSeconds: 30
+
       containers:
-      - name: user-service
-        image: devopsdevacr7583.azurecr.io/user-service:191f2e3
-        imagePullPolicy: Always
+        - name: user-service
+          image: devopsdevacr7583.azurecr.io/user-service:396002b
+          imagePullPolicy: Always
 
-        ports:
-        - containerPort: 3001
+          ports:
+            - containerPort: 3001
 
-        env:
-        - name: PORT
-          value: "3001"
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
 
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "250m"
-            memory: "256Mi"
+          env:
+            - name: PORT
+              value: "3001"
 
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 3001
-          initialDelaySeconds: 5
-          periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            failureThreshold: 30
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 15
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 10
 
 ---
 apiVersion: v1
@@ -59,5 +81,5 @@ spec:
     app: user-service
     version: canary
   ports:
-  - port: 80
-    targetPort: 3001
+    - port: 80
+      targetPort: 3001
