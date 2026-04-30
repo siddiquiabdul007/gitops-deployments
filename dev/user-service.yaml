@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
       - name: user-service
-        image: devopsdevacr7583.azurecr.io/user-service:53b9323
+        image: devopsdevacr7583.azurecr.io/user-service:848b866
         imagePullPolicy: Always
 
         ports:
