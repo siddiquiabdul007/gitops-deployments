@@ -18,7 +18,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: order-service
-          image: devopsdevacr7583.azurecr.io/order-service:396002b
+          image: devopsdevacr7583.azurecr.io/order-service:426a16a
           imagePullPolicy: Always
 
           ports:
